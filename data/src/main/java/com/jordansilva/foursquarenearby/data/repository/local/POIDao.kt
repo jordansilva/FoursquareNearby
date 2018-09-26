@@ -2,7 +2,7 @@ package com.jordansilva.foursquarenearby.data.repository.local
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.jordansilva.foursquarenearby.data.repository.model.POI
+import com.jordansilva.foursquarenearby.domain.model.POI
 
 @Dao
 interface POIDao : BaseDao<POI> {

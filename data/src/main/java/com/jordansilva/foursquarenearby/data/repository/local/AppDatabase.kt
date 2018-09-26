@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.jordansilva.foursquarenearby.domain.model.POI
 
-@Database(entities = [], version = 1)
+@Database(entities = [POI::class], version = 1, exportSchema = false)
 //@TypeConverters(RoomTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
