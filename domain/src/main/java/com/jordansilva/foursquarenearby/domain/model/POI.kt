@@ -1,4 +1,4 @@
-package com.jordansilva.foursquarenearby.data.repository.model
+package com.jordansilva.foursquarenearby.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
