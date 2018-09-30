@@ -2,10 +2,12 @@ package com.jordansilva.foursquarenearby.app.ui.home
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.jordansilva.foursquarenearby.app.ui.BaseActivity
 import com.jordansilva.foursquarenearby.app.R
+import com.jordansilva.foursquarenearby.app.ui.BaseActivity
 import com.jordansilva.foursquarenearby.app.ui.poi.POIFragment
+import com.jordansilva.foursquarenearby.app.ui.poi.POIViewModel
 import kotlinx.android.synthetic.main.activity_home.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeActivity : BaseActivity() {
 
@@ -17,10 +19,8 @@ class HomeActivity : BaseActivity() {
         init()
     }
 
-    fun configureUi() {
-         setSupportActionBar(toolbar)
-         supportActionBar?.setDisplayShowTitleEnabled(false)
-         setTitle("")
+    private fun configureUi() {
+        configureToolbar(false)
     }
 
     fun init() {

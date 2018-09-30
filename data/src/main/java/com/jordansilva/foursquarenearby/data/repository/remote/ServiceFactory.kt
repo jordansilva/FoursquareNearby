@@ -12,14 +12,13 @@ open class ServiceFactory {
 
     protected fun makeOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor,
                                    networkInterceptor: Interceptor,
-                                   httpAuthInterceptor: Interceptor): OkHttpClient {
+                                   httpAuthInterceptor: Interceptor): OkHttpClient.Builder {
         return OkHttpClient.Builder()
                 .addInterceptor(httpLoggingInterceptor)
                 .addInterceptor(networkInterceptor)
                 .addInterceptor(httpAuthInterceptor)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(45, TimeUnit.SECONDS)
-                .build()
     }
 
     protected fun makeGson(): Gson {

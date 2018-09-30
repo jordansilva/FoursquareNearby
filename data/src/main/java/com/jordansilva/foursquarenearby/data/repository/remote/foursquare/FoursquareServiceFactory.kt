@@ -22,12 +22,12 @@ object FoursquareServiceFactory : ServiceFactory() {
         val gsonConverter = GsonConverterFactory.create(GsonFactory.getInstance())
         val loggingInterceptor = makeLoggingInterceptor(true)
 
-        val okHttpClient = makeOkHttpClient(loggingInterceptor, networkInterceptor, httpAuthInterceptor)
+        val builderOkHttpClient = makeOkHttpClient(loggingInterceptor, networkInterceptor, httpAuthInterceptor)
 
         val retrofit = Retrofit.Builder()
                 .baseUrl(Constants.API.FOURSQUARE)
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                .client(okHttpClient)
+                .client(builderOkHttpClient.build())
                 .addConverterFactory(gsonConverter)
                 .build()
         return retrofit.create(obj)

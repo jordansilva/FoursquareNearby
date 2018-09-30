@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jordansilva.foursquarenearby.app">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:name=".App"
@@ -14,9 +16,10 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.poi.POIDetailActivity"
-            android:label="@string/title_activity_poidetail"
-            android:theme="@style/AppTheme"></activity>
-        <activity android:name=".ui.home.HomeActivity" />
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +31,7 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
     </application>
 
 </manifest>

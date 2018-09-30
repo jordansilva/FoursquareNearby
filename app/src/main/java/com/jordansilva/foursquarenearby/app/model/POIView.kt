@@ -6,4 +6,11 @@ data class POIView(var id: String,
                    var location: String,
                    var category: String?,
                    var categories: ArrayList<String>,
-                   var photo: String?)
+                   var bestPhoto: String?) {
+
+    var photos: ArrayList<String> = arrayListOf()
+    var contact: String? = null
+    var facebookUsername: String? = null
+    var twitter: String? = null
+    var rating: Double? = null
+}

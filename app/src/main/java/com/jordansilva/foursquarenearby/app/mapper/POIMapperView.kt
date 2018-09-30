@@ -2,6 +2,7 @@ package com.jordansilva.foursquarenearby.app.mapper
 
 import com.jordansilva.foursquarenearby.domain.model.POI
 import com.jordansilva.foursquarenearby.app.model.POIView
+import java.util.ArrayList
 
 class POIMapperView : MapperView<POI, POIView> {
 
@@ -12,6 +13,12 @@ class POIMapperView : MapperView<POI, POIView> {
                 location = type.address.toString(),
                 category = type.category,
                 categories = type.categories,
-                photo = null)
+                bestPhoto = type.bestPhoto).apply {
+            photos = type.photos
+            contact = type.contact
+            facebookUsername = type.facebookUsername
+            twitter = type.twitter
+            rating = type.rating
+        }
     }
 }

@@ -9,7 +9,9 @@ data class VenueResponse(@SerializedName("id") val id: String,
                          @SerializedName("contact") val contact: Contact?,
                          @SerializedName("location") val location: Address,
                          @SerializedName("categories") val categories: Array<Category>,
-                         @SerializedName("rating") val rating: Double) {
+                         @SerializedName("rating") val rating: Double,
+                         @SerializedName("photos") val photos: PhotosResponse?,
+                         @SerializedName("bestPhoto") val bestPhoto: PhotosResponse.Photo?) {
 
     data class Category(@SerializedName("name") val name: String,
                         @SerializedName("pluralName") val pluralName: String,
@@ -18,7 +20,9 @@ data class VenueResponse(@SerializedName("id") val id: String,
 
     data class Contact(@SerializedName("phone") val phone: String?,
                        @SerializedName("formattedPhone") val formattedPhone: String?,
-                       @SerializedName("twitter") val twitter: String?)
+                       @SerializedName("twitter") val twitter: String?,
+                       @SerializedName("facebook") val facebook: String?,
+                       @SerializedName("facebookUsername") val facebookUsername: String?)
 
     data class Address(@SerializedName("address") val address: String?,
                        @SerializedName("crossStreet") val crossStreet: String?,

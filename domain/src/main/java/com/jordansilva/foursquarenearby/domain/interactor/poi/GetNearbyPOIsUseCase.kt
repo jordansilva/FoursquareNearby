@@ -1,5 +1,6 @@
 package com.jordansilva.foursquarenearby.domain.interactor.poi
 
+import androidx.lifecycle.LiveData
 import com.jordansilva.foursquarenearby.domain.interactor.BaseUseCase
 import com.jordansilva.foursquarenearby.domain.model.POI
 import com.jordansilva.foursquarenearby.domain.repository.POIRepository
@@ -10,7 +11,7 @@ class GetNearbyPOIsUseCase(private var poiRepository: POIRepository) : BaseUseCa
                                 val radius: Int,
                                 val limit: Int)
 
-    suspend fun execute(request: NearbyPOIRequest): List<POI> {
+    suspend fun execute(request: NearbyPOIRequest): LiveData<List<POI>> {
         try {
             return async { poiRepository.getNearbyPOIs(request.location, request.radius, request.limit) }.await()
         } catch (exception: Exception) {
