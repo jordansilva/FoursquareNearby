@@ -1,12 +1,11 @@
 package com.jordansilva.foursquarenearby.data.repository.remote.interceptor
 
+import com.jordansilva.foursquarenearby.infrastructure.util.Constants
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 
-class HttpFoursquareInterceptor(private val clientId: String,
-                                private val secret: String,
-                                private val version: String) : Interceptor {
+class HttpFoursquareInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response? {
         val original = chain.request()
@@ -19,9 +18,9 @@ class HttpFoursquareInterceptor(private val clientId: String,
 
         //Replacing Foursquare URL with API version and Client keys
         val newUrl = originalUrl.newBuilder()
-                .addQueryParameter("client_id", clientId)
-                .addQueryParameter("client_secret", secret)
-                .addQueryParameter("v", version)
+                .addQueryParameter("client_id", Constants.API.FOURSQUARE_CLIENT_ID)
+                .addQueryParameter("client_secret", Constants.API.FOURSQUARE_CLIENT_SECRET)
+                .addQueryParameter("v", Constants.API.FOURSQUARE_VERSION)
                 .build()
 
         return original.newBuilder()

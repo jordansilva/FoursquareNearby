@@ -1,6 +1,8 @@
 package com.jordansilva.foursquarenearby.data.repository
 
+import android.text.TextUtils
 import com.jordansilva.foursquarenearby.data.repository.local.POIDao
+import com.jordansilva.foursquarenearby.data.repository.mapper.POIMapper
 import com.jordansilva.foursquarenearby.data.repository.remote.foursquare.VenuesApi
 import com.jordansilva.foursquarenearby.domain.model.POI
 import com.jordansilva.foursquarenearby.domain.repository.POIRepository
@@ -11,16 +13,11 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
 
     override suspend fun getNearbyPOIs(location: String, radius: Int, limit: Int): List<POI> {
         try {
-            //TODO: Implement 
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
-        return arrayListOf()
-    }
+            val result = apiVenues.searchByLocation(location, "browse", radius, limit).await()
+            val listOfVenues = result.response?.result
+            val listOfPOIs = listOfVenues?.map { POIMapper.mapToDomain(it) }
 
-    override suspend fun getNearbyPOIs(latitude: Double, longitude: Double, radius: Int, limit: Int): List<POI> {
-        try {
-            //TODO: Implement 
+            return listOfPOIs ?: arrayListOf()
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
@@ -29,10 +26,13 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
 
     override suspend fun getPOI(id: String): POI {
         try {
-            //TODO: Implement 
+            val result = apiVenues.getById(id).await()
+            val venue = result.response?.result
+
+            return venue?.let { POIMapper.mapToDomain(it) } ?: throw Exception()
         } catch (ex: Exception) {
             ex.printStackTrace()
+            throw ex
         }
-        return POI("aa", "aa", null, "aa", "aa", 0.0)
     }
 }

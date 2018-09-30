@@ -7,7 +7,14 @@ data class VenueResponse(@SerializedName("id") val id: String,
                          @SerializedName("name") val name: String,
                          @SerializedName("description") val description: String?,
                          @SerializedName("contact") val contact: Contact?,
-                         @SerializedName("location") val location: Address) {
+                         @SerializedName("location") val location: Address,
+                         @SerializedName("categories") val categories: Array<Category>,
+                         @SerializedName("rating") val rating: Double) {
+
+    data class Category(@SerializedName("name") val name: String,
+                        @SerializedName("pluralName") val pluralName: String,
+                        @SerializedName("shortName") val shortName: String,
+                        @SerializedName("primary") val primary: Boolean)
 
     data class Contact(@SerializedName("phone") val phone: String?,
                        @SerializedName("formattedPhone") val formattedPhone: String?,

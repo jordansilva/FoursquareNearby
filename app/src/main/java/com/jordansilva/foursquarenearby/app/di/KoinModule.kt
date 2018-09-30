@@ -1,7 +1,9 @@
 package com.jordansilva.foursquarenearby.app.di
 
 import androidx.room.RoomDatabase
-import com.jordansilva.foursquarenearby.app.ui.poi.POIListViewModel
+import com.jordansilva.foursquarenearby.app.mapper.MapperView
+import com.jordansilva.foursquarenearby.app.mapper.POIMapperView
+import com.jordansilva.foursquarenearby.app.model.POIView
 import com.jordansilva.foursquarenearby.app.ui.poi.POIViewModel
 import com.jordansilva.foursquarenearby.data.repository.POIDataRepository
 import com.jordansilva.foursquarenearby.data.repository.local.AppDatabase
@@ -11,8 +13,8 @@ import com.jordansilva.foursquarenearby.data.repository.remote.interceptor.HttpF
 import com.jordansilva.foursquarenearby.data.repository.remote.interceptor.NetworkConnectionInterceptor
 import com.jordansilva.foursquarenearby.domain.interactor.poi.GetNearbyPOIsUseCase
 import com.jordansilva.foursquarenearby.domain.interactor.poi.GetPOIUseCase
+import com.jordansilva.foursquarenearby.domain.model.POI
 import com.jordansilva.foursquarenearby.domain.repository.POIRepository
-import com.jordansilva.foursquarenearby.infrastructure.util.Constants
 import com.jordansilva.foursquarenearby.infrastructure.util.factory.GsonFactory
 import org.koin.androidx.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
@@ -23,8 +25,10 @@ object KoinModule {
         //viewModel { MainActivityViewModel(get(), get()) }
 
         //POI details and POIs list viewModel injection
-        viewModel { POIListViewModel(get()) }
-        viewModel { POIViewModel(get()) }
+        viewModel { POIViewModel(get(), get(), get("poiViewMapper")) }
+
+        //Mappers
+        factory("poiViewMapper") { POIMapperView() as MapperView<POI, POIView> }
     }
 
     val UseCaseModule = module {
@@ -38,6 +42,9 @@ object KoinModule {
     val RepositoryModule = module {
         single { AppDatabase.getInstance(get()) as RoomDatabase }
 
+        //Dao
+        factory { AppDatabase.getInstance(get()).poiDao() }
+
         //Repositories
         factory { POIDataRepository(get(), get()) } bind POIRepository::class
     }
@@ -45,11 +52,7 @@ object KoinModule {
     val ApiModule = module {
         //Interceptors
         factory { NetworkConnectionInterceptor(get()) }
-        factory {
-            HttpFoursquareInterceptor(Constants.API.FOURSQUARE_CLIENT_ID,
-                    Constants.API.FOURSQUARE_CLIENT_SECRET,
-                    Constants.API.FOURSQUARE_VERSION)
-        }
+        factory { HttpFoursquareInterceptor() }
 
         //APIs
         factory { FoursquareServiceFactory.makeVenuesApiService(get(), get()) } bind VenuesApi::class
