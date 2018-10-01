@@ -7,7 +7,7 @@ import com.jordansilva.foursquarenearby.domain.repository.POIRepository
 
 class GetPOIUseCase(private var poiRepository: POIRepository) : BaseUseCase() {
 
-    suspend fun execute(id: String): LiveData<POI> {
+    suspend fun execute(id: String): POI {
         try {
             if (id.isBlank()) throw Exception("Invalid id!")
 

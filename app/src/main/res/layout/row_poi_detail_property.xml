@@ -3,32 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="32dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="8dp">
 
-    <LinearLayout
+    <com.mikepenz.iconics.view.IconicsImageView
+        android:id="@+id/imageProperty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:iiv_color="@color/dark_gray" />
+
+    <TextView
+        android:id="@+id/textProperty"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <com.mikepenz.iconics.view.IconicsImageView
-            android:id="@+id/imageProperty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:iiv_color="@color/dark_gray" />
-
-        <TextView
-            android:id="@+id/textProperty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/text_margin"
-            android:fontFamily="@font/roboto_light"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:text="@tools:sample/us_phones" />
-    </LinearLayout>
-
-    <include layout="@layout/row_line_divisor" />
-
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/text_margin"
+        android:fontFamily="@font/roboto_light"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="@tools:sample/us_phones" />
 </LinearLayout>

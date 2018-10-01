@@ -1,24 +1,30 @@
 package com.jordansilva.foursquarenearby.app.ui.poi
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.DividerItemDecoration.HORIZONTAL
+import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import com.jordansilva.foursquarenearby.app.R
 import com.jordansilva.foursquarenearby.app.model.POIView
 import com.jordansilva.foursquarenearby.app.ui.BaseActivity
+import com.jordansilva.foursquarenearby.app.ui.poi.adapter.POIPropertyAdapter
 import com.jordansilva.foursquarenearby.app.ui.poi.adapter.SliderImageAdapter
-import com.jordansilva.foursquarenearby.infrastructure.util.extensions.isNull
+import com.jordansilva.foursquarenearby.app.util.OnItemClickViewListener
+import com.jordansilva.foursquarenearby.infrastructure.util.extensions.notNull
+import com.jordansilva.foursquarenearby.infrastructure.util.extensions.notNullOrEmpty
 import com.jordansilva.foursquarenearby.infrastructure.util.extensions.px
+import com.jordansilva.foursquarenearby.infrastructure.util.extensions.whenNotNull
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.iconics.view.IconicsImageView
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_poi_detail.*
 import kotlinx.android.synthetic.main.content_poidetail.*
 import kotlinx.android.synthetic.main.row_poi_detail_property.view.*
@@ -29,10 +35,11 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class POIDetailActivity : BaseActivity() {
+class POIDetailActivity : BaseActivity(), OnItemClickViewListener<POIPropertyAdapter.POIProperty> {
 
     private val viewModel by viewModel<POIViewModel>()
     private lateinit var mItemId: String
+    private lateinit var mAdapter: POIPropertyAdapter
 
     companion object {
         const val ARGS_POI_ID = "POI_ID"
@@ -52,6 +59,12 @@ class POIDetailActivity : BaseActivity() {
 
     private fun configureUi() {
         configureToolbar()
+
+        mAdapter = POIPropertyAdapter(null, this)
+        recyclerProperties.adapter = mAdapter
+
+        viewPager.pageMargin = 16.px
+        tabDots.setupWithViewPager(viewPager, true)
     }
 
     private fun init() {
@@ -60,13 +73,12 @@ class POIDetailActivity : BaseActivity() {
         val itemName = intent.getStringExtra(ARGS_POI_NAME)
         itemName?.let { toolbarLayout.title = it }
 
-        val itemLocation = intent.getStringExtra(ARGS_POI_LOCATION)
-        viewLocation.textProperty.text = itemLocation
+        val list = ArrayList<POIPropertyAdapter.POIProperty>()
 
-        viewLocation.imageProperty.icon(MaterialDesignIconic.Icon.gmi_pin, android.R.color.holo_red_light)
-        viewContact.imageProperty.icon(MaterialDesignIconic.Icon.gmi_phone, R.color.dark_gray)
-        viewFacebook.imageProperty.icon(MaterialDesignIconic.Icon.gmi_facebook, R.color.dark_gray)
-        viewTwitter.imageProperty.icon(MaterialDesignIconic.Icon.gmi_twitter, R.color.dark_gray)
+        val itemLocation = intent.getStringExtra(ARGS_POI_LOCATION)
+        list.add(POIPropertyAdapter.POIProperty(itemLocation, "LOCATION", MaterialDesignIconic.Icon.gmi_pin))
+
+        mAdapter.updateData(list)
 
         fetchPOIbyId(mItemId)
     }
@@ -78,32 +90,31 @@ class POIDetailActivity : BaseActivity() {
     private fun loadPOI(place: POIView) {
         toolbarLayout.title = place.name
 
-        viewLocation.textProperty.text = place.location
-
-        viewContact.isVisible = !place.contact.isNullOrEmpty()
-        viewContact.textProperty.text = place.contact
-        viewContact.onClick { makeCall(place.contact!!) }
-
-        viewFacebook.isVisible = !place.facebookUsername.isNullOrEmpty()
-        viewFacebook.textProperty.text = place.facebookUsername
-        viewFacebook.onClick { browse("https://facebook.com/${place.facebookUsername}") }
-
-        viewTwitter.isVisible = !place.twitter.isNullOrEmpty()
-        viewTwitter.textProperty.text = "@${place.twitter}"
-        viewTwitter.onClick { browse("https://twitter.com/${place.twitter}") }
+        val list = ArrayList<POIPropertyAdapter.POIProperty>()
+        place.location.notNullOrEmpty { list.add(POIPropertyAdapter.POIProperty(it, "LOCATION", MaterialDesignIconic.Icon.gmi_pin)) }
+        place.contact.notNullOrEmpty { list.add(POIPropertyAdapter.POIProperty(it, "CONTACT", MaterialDesignIconic.Icon.gmi_phone)) }
+        place.facebookUsername.notNullOrEmpty { list.add(POIPropertyAdapter.POIProperty(it, "FACEBOOK", MaterialDesignIconic.Icon.gmi_facebook)) }
+        place.twitter.notNullOrEmpty { list.add(POIPropertyAdapter.POIProperty(it, "TWITTER", MaterialDesignIconic.Icon.gmi_twitter)) }
+        mAdapter.updateData(list)
 
         linearDescription.isVisible = !place.description.isNullOrEmpty()
         textDescription.text = place.description
 
-        viewPager.pageMargin = 16.px
         viewPager.adapter = SliderImageAdapter(ctx, place.photos)
-        tabDots.setupWithViewPager(viewPager, true)
     }
 
-    fun IconicsImageView.icon(icon: IIcon, @ColorRes colorId: Int, size: Int = 16) {
-        this.icon = IconicsDrawable(ctx)
-                .icon(icon)
-                .color(ContextCompat.getColor(ctx, colorId))
-                .sizeDp(size)
+    override fun onClickItem(view: View, item: POIPropertyAdapter.POIProperty) {
+        when (item.type) {
+            "LOCATION" -> {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=${item.name}"))
+                intent.`package` = "com.google.android.apps.maps"
+                startActivity(intent)
+            }
+            "CONTACT" -> startActivity(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", item.name, null)))
+            "FACEBOOK" -> browse("https://facebook.com/${item.name}")
+            "TWITTER" -> browse("https://twitter.com/${item.name}")
+        }
     }
+
+
 }

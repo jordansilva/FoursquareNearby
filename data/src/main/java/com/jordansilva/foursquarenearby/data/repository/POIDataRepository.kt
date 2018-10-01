@@ -1,6 +1,5 @@
 package com.jordansilva.foursquarenearby.data.repository
 
-import androidx.lifecycle.LiveData
 import com.jordansilva.foursquarenearby.data.repository.exception.NetworkApiException
 import com.jordansilva.foursquarenearby.data.repository.local.POIDao
 import com.jordansilva.foursquarenearby.data.repository.mapper.POIMapper
@@ -8,13 +7,14 @@ import com.jordansilva.foursquarenearby.data.repository.remote.foursquare.Venues
 import com.jordansilva.foursquarenearby.domain.model.POI
 import com.jordansilva.foursquarenearby.domain.repository.POIRepository
 import com.jordansilva.foursquarenearby.infrastructure.util.extensions.isNotNullOrEmpty
+import com.jordansilva.foursquarenearby.infrastructure.util.extensions.notNull
 import java.util.*
 
 class POIDataRepository constructor(private val apiVenues: VenuesApi,
                                     private val poiDao: POIDao) : POIRepository {
 
 
-    override suspend fun getNearbyPOIs(location: String, radius: Int, limit: Int): LiveData<List<POI>> {
+    override suspend fun getNearbyPOIs(location: String, radius: Int, limit: Int): List<POI> {
 
         val queryId = "$location,$radius"
 
@@ -33,8 +33,8 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
 
                     //saving data
                     apiListResult.isNotNullOrEmpty().let {
-                        poiDao.deletePOIs(queryId)
-                        poiDao.save(apiListResult!!)
+                        poiDao.deletePOIs(queryId) //Delete old items
+                        poiDao.savePOIs(apiListResult!!) //Don't replace items
                     }
                 }
             }
@@ -48,14 +48,20 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
         return poiDao.listPOIs(queryId)
     }
 
-    override suspend fun getPOI(id: String): LiveData<POI> {
+    override suspend fun getPOI(id: String): POI {
+
         try {
             //Checking API
             val apiResult = apiVenues.getById(id).await()
             when (apiResult.meta?.code) {
                 200 -> {
                     val poi = apiResult.response?.result?.let { POIMapper.mapToDomain(it) }
-                    poi?.let { poiDao.save(it) }
+                    poi.notNull {
+                        val localResult = poiDao.getById(id)
+                        it.queryString = localResult.queryString
+                        it.updated = Date()
+                        poiDao.update(it)
+                    }
                 }
             }
         } catch (ex: NetworkApiException) {

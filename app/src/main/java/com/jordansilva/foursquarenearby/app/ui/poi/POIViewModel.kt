@@ -26,7 +26,7 @@ class POIViewModel(private val getPOIUseCase: GetPOIUseCase,
         launchAsync {
             try {
                 val item = getPOIUseCase.execute(id)
-                item.observeForever { place.postValue(mapper.mapFromDomain(it)) }
+                place.postValue(mapper.mapFromDomain(item))
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
@@ -45,7 +45,7 @@ class POIViewModel(private val getPOIUseCase: GetPOIUseCase,
         launchAsync {
             try {
                 val list = getNearbyPOIsUseCase.execute(request)
-                list.observeForever { items -> listPlaces.postValue(items.map { mapper.mapFromDomain(it) }) }
+                listPlaces.postValue(list.map { mapper.mapFromDomain(it) })
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

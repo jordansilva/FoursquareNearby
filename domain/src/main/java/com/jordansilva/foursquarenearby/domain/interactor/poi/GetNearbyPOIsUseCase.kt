@@ -11,7 +11,7 @@ class GetNearbyPOIsUseCase(private var poiRepository: POIRepository) : BaseUseCa
                                 val radius: Int,
                                 val limit: Int)
 
-    suspend fun execute(request: NearbyPOIRequest): LiveData<List<POI>> {
+    suspend fun execute(request: NearbyPOIRequest): List<POI> {
         try {
             return async { poiRepository.getNearbyPOIs(request.location, request.radius, request.limit) }.await()
         } catch (exception: Exception) {

@@ -21,6 +21,10 @@ fun <T : Any> T?.isNull(f: (it: T?) -> Unit) {
     if (this == null) f(this)
 }
 
+fun <T : CharSequence> T?.notNullOrEmpty(f: (it: T) -> Unit) {
+    if (this != null && this.isNotEmpty()) f(this)
+}
+
 fun <T : Any> List<T>?.isNotNullOrEmpty() = (this != null && this.isNotEmpty())
 
 fun <T : Any> List<T>?.notNullOrEmpty(f: (it: List<T>) -> Unit) {
