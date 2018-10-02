@@ -2,6 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     compileSdkVersion 28
@@ -80,6 +85,12 @@ dependencies {
     implementation "com.mikepenz:iconics-views:3.1.0"
     implementation "com.mikepenz:material-design-iconic-typeface:+@aar"
     implementation "me.gujun.android.taggroup:library:1.4@aar"
+
+    //Fabric
+
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
+        transitive = true
+    }
 }
 
 kotlin { experimental { coroutines 'enable' } }
