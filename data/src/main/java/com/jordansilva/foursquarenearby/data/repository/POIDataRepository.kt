@@ -38,7 +38,7 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
                     //Saving data... Don't replace items.
                     //I might have more data saved in POI when getting an unique POI by getPOI
                     //Thus, I'm not replacing POIs when listing POIs
-                    apiListResult.notNullOrEmpty { poiDao.savePOIs(apiListResult!!)  }
+                    apiListResult.notNullOrEmpty { poiDao.savePOIs(apiListResult!!) }
                 }
             }
         } catch (ex: NetworkApiException) {
@@ -54,7 +54,6 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
     }
 
     override suspend fun getPOI(id: String): POI {
-
         try {
             //Checking API
             val apiResult = apiVenues.getById(id).await()
@@ -79,5 +78,34 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
         }
 
         return poiDao.getById(id)
+    }
+
+    override suspend fun getPOIPhotos(id: String): List<String> {
+        val poi = poiDao.getById(id)
+
+        try {
+            //Checking API
+            val apiPhotosResult = apiVenues.getPhotos(id).await()
+            when (apiPhotosResult.meta?.code) {
+                200 -> {
+                    val photosResponse = apiPhotosResult.response?.photos?.items
+                    val photos = photosResponse?.map { POIMapper.mapPhotoToString(it) }
+                    val filteredPhotos = photos?.filterNotNull()
+                    filteredPhotos.notNull {
+                        poi.photos = ArrayList(it)
+                        poiDao.update(poi)
+                    }
+                }
+            }
+        } catch (ex: NetworkApiException) {
+            ex.printStackTrace()
+        } catch (ex: HttpException) {
+            ex.printStackTrace()
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            throw ex
+        }
+
+        return poi.photos
     }
 }

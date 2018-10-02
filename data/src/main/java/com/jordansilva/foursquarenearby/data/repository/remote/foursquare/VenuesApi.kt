@@ -1,5 +1,6 @@
 package com.jordansilva.foursquarenearby.data.repository.remote.foursquare
 
+import com.jordansilva.foursquarenearby.data.repository.remote.foursquare.model.PhotosResponse
 import com.jordansilva.foursquarenearby.data.repository.remote.foursquare.model.VenueDetailsResponse
 import com.jordansilva.foursquarenearby.data.repository.remote.foursquare.model.VenueResponse
 import com.jordansilva.foursquarenearby.data.repository.remote.foursquare.model.VenuesSearchResponse
@@ -24,4 +25,7 @@ interface VenuesApi {
 
     @GET("venues/{id}")
     fun getById(@Path ("id") id: String) : Deferred<FoursquareResponse<VenueDetailsResponse>>
+
+    @GET("venues/{id}/photos")
+    fun getPhotos(@Path ("id") id: String) : Deferred<FoursquareResponse<PhotosResponse>>
 }

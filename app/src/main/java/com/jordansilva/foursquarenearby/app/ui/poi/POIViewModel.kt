@@ -5,17 +5,20 @@ import com.jordansilva.foursquarenearby.app.mapper.MapperView
 import com.jordansilva.foursquarenearby.app.model.POIView
 import com.jordansilva.foursquarenearby.app.ui.BaseViewModel
 import com.jordansilva.foursquarenearby.domain.interactor.poi.GetNearbyPOIsUseCase
+import com.jordansilva.foursquarenearby.domain.interactor.poi.GetPOIPhotosUseCase
 import com.jordansilva.foursquarenearby.domain.interactor.poi.GetPOIUseCase
 import com.jordansilva.foursquarenearby.domain.model.POI
 import com.jordansilva.foursquarenearby.infrastructure.util.extensions.isNotNullOrEmpty
 
 class POIViewModel(private val getPOIUseCase: GetPOIUseCase,
                    private val getNearbyPOIsUseCase: GetNearbyPOIsUseCase,
+                   private val getPOIPhotosUseCase: GetPOIPhotosUseCase,
                    private val mapper: MapperView<POI, POIView>) : BaseViewModel() {
 
     var query: String? = null
     val listPlaces: MutableLiveData<List<POIView>> = MutableLiveData()
     val place: MutableLiveData<POIView> = MutableLiveData()
+    val photos: MutableLiveData<List<String>> = MutableLiveData()
     val loading: MutableLiveData<Boolean> = MutableLiveData()
 
 
@@ -30,6 +33,9 @@ class POIViewModel(private val getPOIUseCase: GetPOIUseCase,
             try {
                 val item = getPOIUseCase.execute(id)
                 place.postValue(mapper.mapFromDomain(item))
+
+                val itemPhotos = getPOIPhotosUseCase.execute(id)
+                photos.postValue(itemPhotos)
             } catch (ex: Exception) {
                 ex.printStackTrace()
             } finally {

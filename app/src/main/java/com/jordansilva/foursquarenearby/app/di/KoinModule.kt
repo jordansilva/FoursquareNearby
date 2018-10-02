@@ -12,6 +12,7 @@ import com.jordansilva.foursquarenearby.data.repository.remote.foursquare.Venues
 import com.jordansilva.foursquarenearby.data.repository.remote.interceptor.HttpFoursquareInterceptor
 import com.jordansilva.foursquarenearby.data.repository.remote.interceptor.NetworkConnectionInterceptor
 import com.jordansilva.foursquarenearby.domain.interactor.poi.GetNearbyPOIsUseCase
+import com.jordansilva.foursquarenearby.domain.interactor.poi.GetPOIPhotosUseCase
 import com.jordansilva.foursquarenearby.domain.interactor.poi.GetPOIUseCase
 import com.jordansilva.foursquarenearby.domain.model.POI
 import com.jordansilva.foursquarenearby.domain.repository.POIRepository
@@ -22,10 +23,8 @@ import org.koin.dsl.module.module
 object KoinModule {
 
     val ViewModule = module {
-        //viewModel { MainActivityViewModel(get(), get()) }
-
         //POI details and POIs list viewModel injection
-        viewModel { POIViewModel(get(), get(), get("poiViewMapper")) }
+        viewModel { POIViewModel(get(), get(), get(), get("poiViewMapper")) }
 
         //Mappers
         factory("poiViewMapper") { POIMapperView() as MapperView<POI, POIView> }
@@ -34,6 +33,7 @@ object KoinModule {
     val UseCaseModule = module {
         factory { GetNearbyPOIsUseCase(get()) }
         factory { GetPOIUseCase(get()) }
+        factory { GetPOIPhotosUseCase(get()) }
 
         //Gson instance
         single { GsonFactory.getInstance() }

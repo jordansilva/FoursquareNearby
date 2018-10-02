@@ -2,7 +2,6 @@ package com.jordansilva.foursquarenearby.data.repository.remote.foursquare.model
 
 import com.google.gson.annotations.SerializedName
 
-//TODO: Add photos
 data class VenueResponse(@SerializedName("id") val id: String,
                          @SerializedName("name") val name: String,
                          @SerializedName("description") val description: String?,
@@ -10,7 +9,6 @@ data class VenueResponse(@SerializedName("id") val id: String,
                          @SerializedName("location") val location: Address,
                          @SerializedName("categories") val categories: Array<Category>,
                          @SerializedName("rating") val rating: Double,
-                         @SerializedName("photos") val photos: PhotosResponse?,
                          @SerializedName("bestPhoto") val bestPhoto: PhotosResponse.Photo?) {
 
     data class Category(@SerializedName("name") val name: String,

@@ -23,13 +23,7 @@ object POIMapper : Mapper<VenueResponse, POI> {
 
                     twitter = type.contact?.twitter
                     facebookUsername = type.contact?.facebookUsername
-
-                    val photosResponse = type.photos?.groups?.flatMap { it.items }
-                    val photosResponseString = photosResponse?.map { mapPhotoToString(it)!! }
-                    photos = arrayListOf()
-                    photosResponseString?.let { photos.addAll(it) }
                     bestPhoto = mapPhotoToString(type.bestPhoto)
-
                 }
     }
 

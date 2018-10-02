@@ -53,6 +53,7 @@ class POIDetailActivity : BaseActivity(), OnItemClickViewListener<POIPropertyAda
         setContentView(R.layout.activity_poi_detail)
 
         viewModel.place.observe(this, Observer { loadPOI(it) })
+        viewModel.photos.observe(this, Observer { loadPhotos(it) })
         viewModel.loading.observe(this, Observer { refreshLayout.isRefreshing = it })
 
         mItemId = intent.getStringExtra(ARGS_POI_ID)
@@ -106,11 +107,12 @@ class POIDetailActivity : BaseActivity(), OnItemClickViewListener<POIPropertyAda
         place.twitter.notNullOrEmpty { list.add(POIPropertyAdapter.POIProperty(it, "TWITTER", MaterialDesignIconic.Icon.gmi_twitter)) }
         mAdapter.updateData(list)
 
-        linearDescription.isVisible = !place.description.isNullOrEmpty()
-        textDescription.text = place.description
-
-        viewPager.adapter = SliderImageAdapter(ctx, place.photos)
+        textDescription.text = place.description ?: getString(R.string.no_description)
         refreshLayout.isRefreshing = false
+    }
+
+    private fun loadPhotos(photos: List<String>) {
+        viewPager.adapter = SliderImageAdapter(ctx, photos)
     }
 
     override fun onClickItem(view: View, item: POIPropertyAdapter.POIProperty) {
