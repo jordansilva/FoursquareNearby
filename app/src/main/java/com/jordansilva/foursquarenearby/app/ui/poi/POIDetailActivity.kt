@@ -27,6 +27,7 @@ import com.mikepenz.iconics.view.IconicsImageView
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import kotlinx.android.synthetic.main.activity_poi_detail.*
 import kotlinx.android.synthetic.main.content_poidetail.*
+import kotlinx.android.synthetic.main.content_poidetail.view.*
 import kotlinx.android.synthetic.main.row_poi_detail_property.view.*
 import org.jetbrains.anko.browse
 import org.jetbrains.anko.ctx
@@ -52,6 +53,9 @@ class POIDetailActivity : BaseActivity(), OnItemClickViewListener<POIPropertyAda
         setContentView(R.layout.activity_poi_detail)
 
         viewModel.place.observe(this, Observer { loadPOI(it) })
+        viewModel.loading.observe(this, Observer { refreshLayout.isRefreshing = it })
+
+        mItemId = intent.getStringExtra(ARGS_POI_ID)
 
         configureUi()
         init()
@@ -65,30 +69,35 @@ class POIDetailActivity : BaseActivity(), OnItemClickViewListener<POIPropertyAda
 
         viewPager.pageMargin = 16.px
         tabDots.setupWithViewPager(viewPager, true)
+
+        refreshLayout.setOnRefreshListener {
+            fetchPOIbyId(mItemId, true)
+        }
     }
 
     private fun init() {
-        mItemId = intent.getStringExtra(ARGS_POI_ID)
-
         val itemName = intent.getStringExtra(ARGS_POI_NAME)
         itemName?.let { toolbarLayout.title = it }
 
         val list = ArrayList<POIPropertyAdapter.POIProperty>()
-
         val itemLocation = intent.getStringExtra(ARGS_POI_LOCATION)
         list.add(POIPropertyAdapter.POIProperty(itemLocation, "LOCATION", MaterialDesignIconic.Icon.gmi_pin))
-
         mAdapter.updateData(list)
 
         fetchPOIbyId(mItemId)
     }
 
-    private fun fetchPOIbyId(id: String) {
-        viewModel.getPOI(id)
+    private fun fetchPOIbyId(id: String, forceRefresh: Boolean = false) {
+        viewModel.getPOI(id, forceRefresh)
     }
 
     private fun loadPOI(place: POIView) {
         toolbarLayout.title = place.name
+
+        tagGroup.isVisible = place.categories.size > 0
+        tagGroup.setTags(place.categories)
+
+        place.rating?.notNull { ratingBar.rating = (it / 5.0).toFloat() }
 
         val list = ArrayList<POIPropertyAdapter.POIProperty>()
         place.location.notNullOrEmpty { list.add(POIPropertyAdapter.POIProperty(it, "LOCATION", MaterialDesignIconic.Icon.gmi_pin)) }
@@ -101,6 +110,7 @@ class POIDetailActivity : BaseActivity(), OnItemClickViewListener<POIPropertyAda
         textDescription.text = place.description
 
         viewPager.adapter = SliderImageAdapter(ctx, place.photos)
+        refreshLayout.isRefreshing = false
     }
 
     override fun onClickItem(view: View, item: POIPropertyAdapter.POIProperty) {

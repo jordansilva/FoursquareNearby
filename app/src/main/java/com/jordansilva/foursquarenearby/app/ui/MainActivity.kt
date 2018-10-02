@@ -1,15 +1,11 @@
-package com.jordansilva.foursquarenearby.app.ui.home
+package com.jordansilva.foursquarenearby.app.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.jordansilva.foursquarenearby.app.R
-import com.jordansilva.foursquarenearby.app.ui.BaseActivity
 import com.jordansilva.foursquarenearby.app.ui.poi.POIFragment
-import com.jordansilva.foursquarenearby.app.ui.poi.POIViewModel
-import kotlinx.android.synthetic.main.activity_home.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class HomeActivity : BaseActivity() {
+class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +19,7 @@ class HomeActivity : BaseActivity() {
         configureToolbar(false)
     }
 
-    fun init() {
+    private fun init() {
         showFragment(POIFragment.newInstance())
     }
 

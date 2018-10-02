@@ -40,11 +40,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="6dp"
                     app:tabBackground="@drawable/tab_selector"
                     app:tabGravity="center"
-                    app:tabIndicatorHeight="0dp" />
-
+                    app:tabIndicatorHeight="4dp" />
 
             </RelativeLayout>
 
@@ -58,7 +56,6 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_poidetail" />
-
+        <include layout="@layout/content_poidetail" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

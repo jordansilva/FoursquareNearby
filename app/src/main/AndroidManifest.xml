@@ -17,10 +17,8 @@
         <activity
             android:name=".ui.poi.POIDetailActivity"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".ui.home.HomeActivity"
-            android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity"
+            android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

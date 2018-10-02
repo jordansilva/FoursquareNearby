@@ -13,9 +13,9 @@ import com.jordansilva.foursquarenearby.app.R
 import com.jordansilva.foursquarenearby.app.model.POIView
 import com.jordansilva.foursquarenearby.app.util.OnItemClickViewListener
 
-class POIRecyclerViewAdapter(private var data: List<POIView>?,
-                             private val mListener: OnItemClickViewListener<POIView>) :
-        RecyclerView.Adapter<POIRecyclerViewAdapter.ViewHolder>(), Filterable {
+class POIAdapter(private var data: List<POIView>?,
+                 private val mListener: OnItemClickViewListener<POIView>) :
+        RecyclerView.Adapter<POIAdapter.ViewHolder>(), Filterable {
 
     private val mOnClickListener: View.OnClickListener
     private val filteredData: ArrayList<POIView> = arrayListOf()
@@ -23,6 +23,7 @@ class POIRecyclerViewAdapter(private var data: List<POIView>?,
     init {
         updateData(data)
 
+        setHasStableIds(true)
         mOnClickListener = View.OnClickListener { v ->
             val item = v.tag as POIView
             mListener.onClickItem(v, item)
@@ -46,10 +47,14 @@ class POIRecyclerViewAdapter(private var data: List<POIView>?,
     override fun getFilter(): Filter = AdapterFilter(this, data!!)
 
     fun updateData(items: List<POIView>?) {
-        data = items ?: arrayListOf()
         filteredData.clear()
+        data = items ?: arrayListOf()
         filteredData.addAll(data!!)
         notifyDataSetChanged()
+    }
+
+    override fun getItemId(position: Int): Long {
+        return filteredData[position].id.hashCode().toLong()
     }
 
     private fun filterData(items: List<POIView>?) {
@@ -66,7 +71,7 @@ class POIRecyclerViewAdapter(private var data: List<POIView>?,
         }
     }
 
-    inner class AdapterFilter(private val adapter: POIRecyclerViewAdapter,
+    inner class AdapterFilter(private val adapter: POIAdapter,
                               private val completeList: List<POIView>) : Filter() {
 
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {

@@ -6,8 +6,9 @@ import com.jordansilva.foursquarenearby.data.repository.mapper.POIMapper
 import com.jordansilva.foursquarenearby.data.repository.remote.foursquare.VenuesApi
 import com.jordansilva.foursquarenearby.domain.model.POI
 import com.jordansilva.foursquarenearby.domain.repository.POIRepository
-import com.jordansilva.foursquarenearby.infrastructure.util.extensions.isNotNullOrEmpty
 import com.jordansilva.foursquarenearby.infrastructure.util.extensions.notNull
+import com.jordansilva.foursquarenearby.infrastructure.util.extensions.notNullOrEmpty
+import retrofit2.HttpException
 import java.util.*
 
 class POIDataRepository constructor(private val apiVenues: VenuesApi,
@@ -16,11 +17,15 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
 
     override suspend fun getNearbyPOIs(location: String, radius: Int, limit: Int): List<POI> {
 
-        val queryId = "$location,$radius"
+        val query = location.trim().toLowerCase()
+        val queryId = "$query,$radius"
 
         try {
+            //Delete POIs cached older than 1 day
+            poiDao.deletePOIs(queryId)
+
             //Checking API
-            val apiResult = apiVenues.searchByLocation(location, "browse", radius, limit).await()
+            val apiResult = apiVenues.searchByLocation(query, "browse", radius, limit).await()
 
             when (apiResult.meta?.code) {
                 200 -> {
@@ -30,15 +35,15 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
                             updated = Date()
                         }
                     }
-
-                    //saving data
-                    apiListResult.isNotNullOrEmpty().let {
-                        poiDao.deletePOIs(queryId) //Delete old items
-                        poiDao.savePOIs(apiListResult!!) //Don't replace items
-                    }
+                    //Saving data... Don't replace items.
+                    //I might have more data saved in POI when getting an unique POI by getPOI
+                    //Thus, I'm not replacing POIs when listing POIs
+                    apiListResult.notNullOrEmpty { poiDao.savePOIs(apiListResult!!)  }
                 }
             }
         } catch (ex: NetworkApiException) {
+            ex.printStackTrace()
+        } catch (ex: HttpException) {
             ex.printStackTrace()
         } catch (ex: Exception) {
             ex.printStackTrace()
@@ -65,6 +70,8 @@ class POIDataRepository constructor(private val apiVenues: VenuesApi,
                 }
             }
         } catch (ex: NetworkApiException) {
+            ex.printStackTrace()
+        } catch (ex: HttpException) {
             ex.printStackTrace()
         } catch (ex: Exception) {
             ex.printStackTrace()

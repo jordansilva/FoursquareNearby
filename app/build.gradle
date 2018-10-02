@@ -78,8 +78,8 @@ dependencies {
     //Font
     implementation "com.mikepenz:iconics-core:3.1.0"
     implementation "com.mikepenz:iconics-views:3.1.0"
-    implementation 'com.mikepenz:material-design-iconic-typeface:+@aar'
-
+    implementation "com.mikepenz:material-design-iconic-typeface:+@aar"
+    implementation "me.gujun.android.taggroup:library:1.4@aar"
 }
 
 kotlin { experimental { coroutines 'enable' } }
